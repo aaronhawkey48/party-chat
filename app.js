@@ -6,7 +6,7 @@ var io = require('socket.io').listen(server)
 
 app.set('view engine', 'hbs');
 
-server.listen(3000 || process.env.PORT, ()=> console.log(`App listening on port 3000`))
+server.listen(process.env.PORT || 3000, ()=> console.log(`App listening on port 3000`))
 
 app.get('/', (req, res) => {
     res.render('index', {url: process.env.URL || 'localhost:3000'});
