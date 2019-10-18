@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test Socket</title>
+    </head>
+    <body>
+        <h1>Test Socket</h1>
+        <div id="hide-this">
+            <!-- Create Party-->
+            <button id="createParty" onclick="createParty()">Create Party</button>
+            
+            <br> <br>
+            <!-- Connect to Party -->
+            <h3 class="connectPartyClass">Connect to Existing Party</h3>
+            <input class="connectPartyClass" type="text" id="existingParty" placeholder="Party ID">
+            <button class="connectPartyClass" onclick="connectToParty()">Connect to Party</button>
+
+        </div>
+
+        <div id="party-info" style="display: none;">
+
+            <p id="partyUUID"></p>
+            
+            <!-- Chat Window -->
+            <div>
+                <ul id="messages"></ul> 
+            </div>
+
+            <!-- Message Box -->
+            <h3>Send Message</h3>
+            <input type="text" id="messageBox">
+            <button id="submitMessage" onclick="submitMessage()">Send</button>
+
+        </div>
+
+    </body>
+    <footer>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io.connect('http://localhost:3000');
+            
+            function createParty() {
+                var partyId = 'party-' + createUUID();
+                socket.emit('create-party', partyId);    
+                
+                // Set up chat listener
+                socket.on('message', (event) => {
+                    document.getElementById('messages').insertAdjacentHTML('beforeend', 
+                        '<ul style="font-weight: bold">' + event.sender + '</ul>' + 
+                        '<ul>' + event.message + '</ul>');
+                });
+
+                localStorage.setItem('partyId', partyId);
+
+                document.getElementById('hide-this').style.display = 'none';
+                document.getElementById('party-info').style.display = 'block';
+                document.getElementById('partyUUID').innerHTML = partyId;
+            }
+
+            function submitMessage() {
+                var sender = socket.id;
+                var message = document.getElementById('messageBox').value;
+                socket.emit('message', { room: localStorage.getItem('partyId'), message, sender });
+                document.getElementById('messageBox').value = '';
+            }
+
+            function createUUID() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
+
+            function connectToParty() {
+                var partyId = document.getElementById('existingParty').value;
+                socket.emit('join-party', partyId);
+                localStorage.setItem('partyId', partyId);
+                socket.on('party-join-success-' + socket.id, (event) => {
+                    
+                    document.getElementById('hide-this').style.display = 'none';
+                    document.getElementById('party-info').style.display = 'block';
+                    document.getElementById('partyUUID').innerHTML = partyId;
+                
+                });
+                
+                // Set up chat listener
+                socket.on('message', (event) => {
+                    document.getElementById('messages').insertAdjacentHTML('beforeend', 
+                        '<ul style="font-weight: bold">' + event.sender + '</ul>' + 
+                        '<ul>' + event.message + '</ul>');
+                });
+            }
+
+            // Make text message send on enter press.
+            document.getElementById('messageBox')
+                .addEventListener('keyup', (event) => {
+                    event.preventDefault();
+                    if (event.keyCode === 13) {
+                        document.getElementById('submitMessage').click();
+                    }
+                });
+
+        </script>
+        
+        <style>
+            #messages { list-style-type: none; margin: 0; padding: 0; }
+            #messages li { padding: 5px 10px; }
+            #messages li:nth-child(odd) { background: #eee; }
+        </style>
+    </footer>
+</html>
