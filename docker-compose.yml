@@ -1,0 +1,30 @@
+version: '2'
+services:
+  party-chat-1:
+    build: .
+    command: npm run start
+    volumes:
+      - .:/usr/app/
+      - /usr/app/node_modules
+    ports:
+      - "3000:3000"
+    links:
+      - chat-redis
+    environment:
+      - REDIS_ENDPOINT=chat-redis
+  chat-redis:
+    image: redis
+    expose: 
+      - 6379
+  party-chat-2:
+    build: .
+    command: npm run start
+    volumes:
+      - .:/usr/app/
+      - /usr/app/node_modules
+    ports:
+      - "3001:3000"
+    links:
+      - chat-redis
+    environment:
+      - REDIS_ENDPOINT=chat-redis
