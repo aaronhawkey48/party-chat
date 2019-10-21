@@ -2,7 +2,7 @@ version: '2'
 services:
   party-chat-1:
     build: .
-    command: npm run start
+    command: npm run dev
     volumes:
       - .:/usr/app/
       - /usr/app/node_modules
@@ -12,13 +12,14 @@ services:
       - chat-redis
     environment:
       - REDIS_ENDPOINT=chat-redis
+      - CRON_STATUS=true
   chat-redis:
     image: redis
     expose: 
       - 6379
   party-chat-2:
     build: .
-    command: npm run start
+    command: npm run dev
     volumes:
       - .:/usr/app/
       - /usr/app/node_modules
@@ -28,3 +29,4 @@ services:
       - chat-redis
     environment:
       - REDIS_ENDPOINT=chat-redis
+      - CRON_STATUS=false

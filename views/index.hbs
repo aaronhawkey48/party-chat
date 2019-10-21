@@ -31,6 +31,20 @@
             <input type="text" id="messageBox">
             <button id="submitMessage" onclick="submitMessage()">Send</button>
 
+            <br>
+
+            <!-- Queue -->
+            <h3>Queue Up</h3>
+            <div id="queue">
+                <select id='gameSelect'>
+                    <option value="csgo"> CSGO</option>
+                    <option value="fortnite">Fortnite</option>
+                </select>
+
+                <button id="queueSubmit" onclick="enterQueue()">Enter Queue</button>
+
+                <div id="inQueueText"></div>
+            </div>
         </div>
 
     </body>
@@ -99,6 +113,23 @@
                         document.getElementById('submitMessage').click();
                     }
                 });
+
+            // Join a Queue
+            function enterQueue() {
+                document.getElementById('queue').style.display = 'none';
+                document.getElementById('inQueueText').insertAdjacentHTML = '<p>In Queue... Please wait.</p>';
+
+                var partyId = window.localStorage.getItem(partyId)
+
+                socket.emit('enter-queue',{
+                    partyId: localStorage.getItem('partyId'),
+                    game: document.getElementById('gameSelect').value
+                });
+
+                socket.on(`match-ready`, (event) => {
+                    console.log(event);
+                });
+            }
 
         </script>
         
