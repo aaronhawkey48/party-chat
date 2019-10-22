@@ -59,9 +59,11 @@ io.on('connection', (socket) => {
 
 if(process.env.CRON_STATUS == 'true') {
     console.log('in if');
-    cron.schedule("*/5 * * * * *", () => {
-        var today = new Date();
-        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-        console.log(time);
-      });
+    cron.schedule("*/30 * * * * *", () => {
+        rClient.keys('queue:csgo:party:*', (err, res) => {
+            rClient.mget(res, (err2, reply) => {
+                console.log(reply);
+            });
+        });
+    });
 }
