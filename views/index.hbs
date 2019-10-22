@@ -42,9 +42,10 @@
                 </select>
 
                 <button id="queueSubmit" onclick="enterQueue()">Enter Queue</button>
-
-                <div id="inQueueText"></div>
             </div>
+
+            <div id="inQueueText"></div>
+
         </div>
 
     </body>
@@ -117,7 +118,7 @@
             // Join a Queue
             function enterQueue() {
                 document.getElementById('queue').style.display = 'none';
-                document.getElementById('inQueueText').insertAdjacentHTML = '<p>In Queue... Please wait.</p>';
+                document.getElementById('inQueueText').innerHTML = '<p>In Queue... Please wait.</p>';
 
                 var partyId = window.localStorage.getItem(partyId)
 
@@ -127,7 +128,7 @@
                 });
 
                 socket.on(`match-ready`, (event) => {
-                    console.log(event);
+                    document.getElementById('inQueueText').innerHTML = '<p>Match ready!</p>'
                 });
             }
 
