@@ -55,6 +55,7 @@
         <script>
             var socket = io.connect('{{url}}');
             
+            // Button event -- creates party 
             function createParty() {
                 var partyId = 'party-' + createUUID();
                 socket.emit('create-party', partyId);    
@@ -73,6 +74,7 @@
                 document.getElementById('partyUUID').innerHTML = partyId;
             }
 
+            // Button event -- sends message
             function submitMessage() {
                 var sender = socket.id;
                 var message = document.getElementById('messageBox').value;
@@ -80,6 +82,7 @@
                 document.getElementById('messageBox').value = '';
             }
 
+            // Helper -- creates UUID
             function createUUID() {
                 return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
                     var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -87,6 +90,7 @@
                 });
             }
 
+            // Button Event -- Connect to an existing party
             function connectToParty() {
                 var partyId = document.getElementById('existingParty').value;
                 socket.emit('join-party', partyId);
@@ -124,6 +128,7 @@
                 var partyId = window.localStorage.getItem(partyId);
                 var seconds = 0
 
+                // Creates queue timer
                 window.localStorage.setItem('queueTimer', true);
 
                 window.setInterval( () => {
