@@ -57,6 +57,7 @@ io.on('connection', (socket) => {
 if(process.env.CRON_STATUS == 'true') {
     cron.schedule("*/5 * * * * *", () => {
         rClient.keys('queue:csgo:party:*', (err, res) => {
+            
             // Checks to see if there is at least more than one person in queue
             if(res.length <= 1) {
                 console.log('No potential matches');
@@ -64,13 +65,10 @@ if(process.env.CRON_STATUS == 'true') {
             }
 
             // Gets values for the keys if more than 1 exist
-            for(var i = 0; i < res.length - 1; i=i+2) {
+            for(var i = 0; i < res.length - 1; i = i + 2) {
 
                 var party1 = res[i].split(':')[3];
                 var party2 = res[i+1].split(':')[3];
-                
-                console.log(`p1: `+ party1);
-                console.log(`p2: `+ party2);
 
                 // Notify Queue Pop
                 io.sockets.in(party1).emit('match-ready', {response: 'Queue Popped'});

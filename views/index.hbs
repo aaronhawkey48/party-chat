@@ -45,6 +45,7 @@
             </div>
 
             <div id="inQueueText"></div>
+            <div id="queueTimer"></div>
 
         </div>
 
@@ -120,7 +121,22 @@
                 document.getElementById('queue').style.display = 'none';
                 document.getElementById('inQueueText').innerHTML = '<p>In Queue... Please wait.</p>';
 
-                var partyId = window.localStorage.getItem(partyId)
+                var partyId = window.localStorage.getItem(partyId);
+                var seconds = 0
+
+                window.localStorage.setItem('queueTimer', true);
+
+                window.setInterval( () => {
+
+                    if(window.localStorage.getItem('queueTimer') != 'true'){
+                        document.getElementById('queueTimer').innerHTML = '';
+                        return;
+                    }
+
+                    document.getElementById('queueTimer').innerHTML = `<p>${seconds}</p>`;
+                    seconds++;
+
+                }, 1000);
 
                 socket.emit('enter-queue',{
                     partyId: localStorage.getItem('partyId'),
@@ -128,7 +144,9 @@
                 });
 
                 socket.on(`match-ready`, (event) => {
-                    document.getElementById('inQueueText').innerHTML = '<p>Match ready!</p>'
+                    window.localStorage.setItem('queueTimer', false);
+                    document.getElementById('queueTimer').innerHTML = '';
+                    document.getElementById('inQueueText').innerHTML = '<p>Match ready!</p>';
                 });
             }
 
